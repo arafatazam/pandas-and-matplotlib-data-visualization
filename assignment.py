@@ -65,7 +65,7 @@ def plot_percentage_by_age_group(df: pd.DataFrame):
     different ethnicity
     """
     data = df.iloc[:, :].div(df['All'], axis=0).mul(100)
-    plt.figure
+    plt.figure()
     line_style = 'solid'
     for i in range(len(data.index)):
         plt.plot(data.iloc[i, 1:], label=data.index[i], linestyle=line_style)
@@ -77,10 +77,23 @@ def plot_percentage_by_age_group(df: pd.DataFrame):
     plt.show()
 
 
+def piechart_of_nonwhite_ethnicities(df: pd.DataFrame):
+    """
+    Pie chart to show the non-white population's ethnicity shares
+    by major ethnic groups
+    """
+    data = df.iloc[2:, 0]
+    plt.figure()
+    plt.pie(data, labels=data.index, autopct='%1.1f%%',
+            shadow=True, startangle=90)
+    plt.show()
+
+
 def main():
     data = pd.read_csv('age-groups.csv', index_col=0)
     data = clean_data(data)
     plot_percentage_by_age_group(data)
+    piechart_of_nonwhite_ethnicities(data)
 
 
 if __name__ == "__main__":
