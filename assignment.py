@@ -6,8 +6,10 @@ Created on Wed Nov 16 20:24:59 2022
 @author: Muhammad Arafat Azam (id: 21087019)
 """
 
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mtick
 
 
 def clean_data(df: pd.DataFrame) -> pd.DataFrame:
@@ -50,7 +52,7 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
         'Age 65 to 69': '65-69',
         'Age 70 to 74': '70-74',
         'Age 75 to 79': '75-79',
-        'Age 80 to 84': '80-85',
+        'Age 80 to 84': '80-84',
         'Age 85 and over': '85-'
     }, axis='columns')
     df['5-9'] = df['5-9']+df['8-9']
@@ -71,9 +73,33 @@ def plot_percentage_by_age_group(df: pd.DataFrame):
         plt.plot(data.iloc[i, 1:], label=data.index[i], linestyle=line_style)
         line_style = 'dashed'
     plt.xticks(rotation=45)
+    plt.gca().yaxis.set_major_formatter(mtick.PercentFormatter())
     plt.legend()
-    plt.ylabel('Percentage of the ethnic population')
+    plt.ylabel('Percentage of the total population')
+    plt.xlabel('Age groups')
     plt.title('Percentage of people in age groups for each enthnic group')
+    plt.grid()
+    plt.show()
+
+
+def barchart_of_average_age(df: pd.DataFrame):
+    """
+    Barchart shows average age of different ethnic groups
+    """
+    data = df.T.iloc[-1:0:-1, 1:]
+    data['mid_age'] = [87, 82, 77, 72, 67, 62, 57,
+                       52, 47, 42, 37, 32, 27, 22, 17, 12, 7, 2]
+    avg_data = {'group': [], 'avg_age': []}
+    for col in data.columns[:-1]:
+        avg_data['group'].append(col)
+        avg_data['avg_age'].append(np.average(
+            a=data['mid_age'], weights=data[col]))
+    plt.figure()
+    bars = plt.bar(avg_data['group'], avg_data['avg_age'])
+    plt.bar_label(bars)
+    plt.title('Average age of different ethnic population')
+    plt.xlabel('Ethnic group')
+    plt.ylabel('Average age')
     plt.show()
 
 
@@ -86,6 +112,7 @@ def piechart_of_nonwhite_ethnicities(df: pd.DataFrame):
     plt.figure()
     plt.pie(data, labels=data.index, autopct='%1.1f%%',
             shadow=True, startangle=90)
+    plt.title('Percentage of non-white ethnicities')
     plt.show()
 
 
@@ -93,6 +120,7 @@ def main():
     data = pd.read_csv('age-groups.csv', index_col=0)
     data = clean_data(data)
     plot_percentage_by_age_group(data)
+    barchart_of_average_age(data)
     piechart_of_nonwhite_ethnicities(data)
 
 
